@@ -2,30 +2,25 @@
 This Flask application demonstrates how to configure logging with rotation using Python’s logging module and RotatingFileHandler. The application logs access to the home page and handles log rotation automatically, keeping up to 7 backup logs.
 
 Prerequisites
-
-    Python 3.x
-    Flask (pip install flask)
+- Python 3.x
+- Flask (pip install flask)
 
 Features
-
-    Logging: Logs messages at both DEBUG and INFO levels.
-    Log Rotation: Automatically rotates logs after reaching 1 MB in size, keeping up to 7 backup logs.
-    Permissions: Ensures the log directory exists with appropriate permissions.
+- Logging: Logs messages at both DEBUG and INFO levels.
+- Log Rotation: Automatically rotates logs after reaching 1 MB in size, keeping up to 7 backup logs.
+- Permissions: Ensures the log directory exists with appropriate permissions.
 
 Setup
+- Create the Log Directory:
+    - The application will automatically create the directory /var/log/mon if it does not exist.
+    - The directory permissions are set to 755 to allow read and execute access.
 
-    Create the Log Directory:
-        The application will automatically create the directory /var/log/mon if it does not exist.
-        The directory permissions are set to 755 to allow read and execute access.
-
-    Configure Logging:
-        RotatingFileHandler is used to manage log rotation.
-        Logs are stored in mon.log with a maximum size of 1 MB. Up to 7 backup logs are kept.
-
+- Configure Logging:
+    - RotatingFileHandler is used to manage log rotation.
+    - Logs are stored in mon.log with a maximum size of 1 MB. Up to 7 backup logs are kept.
 
 
-
-What is log rotation
+## What is log rotation?
 In information technology, log rotation is an automated process used in system administration in which log files are compressed, moved (archived), renamed or deleted once they are too old or too big (there can be other metrics that can apply here).
 
 Logrotate is mainly used to log, rotate and compress logs. If you are logging daily, it means that how many logs of daily copies do you want to keep
