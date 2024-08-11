@@ -103,18 +103,84 @@ if __name__ == '__main__':
 <p>This allows you to access the application on any IP address that the host machine has.</p>
 
 
-
-## Running the Application
-
-To run the application, use:
+## Configure Logrotate for Flask Logs
+- Create the Logrotate Configuration File:
+    - Save the following content in `/etc/logrotate.d/mon`
 ```
-python <your_script_name>.py
+/var/log/mon/*.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 0640 root root
+    sharedscripts
+    postrotate
+        # Restart Flask app (or signal it to reload logs)
+        if [ -f /var/run/mon.pid ]; then
+            kill -HUP `cat /var/run/mon.pid` > /dev/null 2>/dev/null || true
+        fi
+    endscript
+}
+```
+
+- Test Logrotate Configuration
+```
+sudo logrotate -d /etc/logrotate.d/mon
+```
+   
+- Forcing Rotation
+```
+sudo logrotate -f /etc/logrotate.d/mon
+```
+
+- Setup Monitoring
+Create a cron job for monitoring large logs
+<p>Add the following cron job to monitor log files larger than 50MB</p>
+
+```
+cron_job="0 0 * * * /usr/bin/find /var/log/mon/ -type f -size +50M -exec echo \"Found large file: {}\" | mail -s \"Large Log Files Alert\" your-email@mail.com \;"
+```
+
+<p>Add it to Crontab</p>
+
+```
+(crontab -l 2>/dev/null; echo "$cron_job") | crontab -
+```
+
+Run and Test the Flask App
+-  Create a Directory for Logs
+```
+sudo mkdir -p /var/log/mon
+sudo chown -R $USER: /var/log/mon
+```
+
+- Run the Flask App
+```
+python mon.py
 ```
 <p>The application will start a Flask server accessible from all network interfaces (0.0.0.0).<p>
+![image](https://github.com/user-attachments/assets/a0df64d2-d624-4df0-bfd7-1d4d22b1322f)
+
+<p>In browser</p>
+![image](https://github.com/user-attachments/assets/135cf2f1-6af3-49fe-937e-597fdc21e2bf)
+
 
 
 ## Accessing the Application
+
 <p>Open your browser and navigate to `http://<server_ip>:5000/`. Access to this page will be logged.<p>
+
+
+## How to view all cron job entries in syslog
+
+```
+grep CRON /var/log/syslog
+```
+![image](https://github.com/user-attachments/assets/6d1d856b-2bde-4316-905c-7f7cee004555)
+
+
 
 ## Additional Notes
 <p>
